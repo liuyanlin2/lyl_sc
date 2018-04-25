@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <link rel="stylesheet" href="/static/css/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/static/css/WdatePicker.css"/>
+    <script src="/static/js/jquery-2.2.2.min.js"></script>
+    <script src="/static/css/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/js/validate_helper.js"></script>
+    <script src="/static/js/jqPaginator.js"></script>
+    <script src="/static/js/comm.js"></script>
+    <script src="/static/js/jquery.form.js"></script>
+    <script src="/static/js/My97DatePicker/WdatePicker.js"></script>
+{#    <script src="/static/js/echarts.min.js"></script>#}
+
+    <style>
+        #main-top{
+            width: 100%;
+{#            height: 10%;#}
+{#            height: 6%;#}
+            background-color: #6EC06E;
+        }
+        .main-left{
+            width: 15%;
+            height: 88%;
+            background-color: #0f0f0f;
+            float: left;
+        }
+        .main-right{
+            width: 85%;
+            height: 88%;
+{#            background-color: #2aabd2;#}
+            float: left;
+        }
+        #ul-menu{
+            list-style: none;
+            width: 100%;
+            padding:0;margin:0;
+        }
+        #ul-menu li{
+            width: 100%;
+            height: 40px;
+        }
+        #ul-menu li i{
+            margin-top: 10px;
+        }
+        #ul-menu li a:link{
+            text-decoration:none;
+        }
+        .li_select{
+            background-color: #43C098;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div id="main" class="main">
+        <div id="main-top">
+            <div style="width: 100%;height: 100%;">
+                <label id="lofont" style="color: white;">懒人爬虫</label>
+            </div>
+        </div>
+        <div class="main-left">
+            <ul id="ul-menu">
+                <li data-url="/info_list/">
+                    <i class="glyphicon glyphicon-home menu_cen" style="margin-left: 20%;color: white;"></i>
+                    <a class="menu_cen" href="javascript:void(0);" style="color: white;">信息列表</a>
+                </li>
+                <li data-url="/task_mgr/">
+                    <i class="glyphicon glyphicon-home menu_cen" style="margin-left: 20%;color: white;"></i>
+                    <a class="menu_cen" href="javascript:void(0);" style="color: white;">任务派发</a>
+                </li>
+                <li data-url="/spider_mgr/">
+                    <i class="glyphicon glyphicon-home menu_cen" style="margin-left: 20%;color: white;"></i>
+                    <a class="menu_cen" href="javascript:void(0);" style="color: white;">爬虫管理</a>
+                </li>
+                <li data-url="/key_words/">
+                    <i class="glyphicon glyphicon-home menu_cen" style="margin-left: 20%;color: white;"></i>
+                    <a class="menu_cen" href="javascript:void(0);" style="color: white;">关键词库</a>
+                </li>
+                <li>
+                    <i class="glyphicon glyphicon-home menu_cen" style="margin-left: 20%;color: white;"></i>
+                    <a class="menu_cen" href="javascript:void(0);" style="color: white;">代理IP池</a>
+                </li>
+
+            </ul>
+
+        </div>
+
+        <div class="main-right">
+
+        </div>
+
+
+    </div>
+
+<script>
+
+    $("#main").css("height",$(window).height()+"px")
+    $("#main").css("width",$(window).width()+"px")
+    //
+    if($(window).height()>=1200){
+        $("#main-top").css("height","6%")
+        $("#lofont").css("font-size","30px")
+        $("#lofont").css("margin-top","30px")
+        $("#lofont").css("margin-left","3%")
+    }else {
+        $("#main-top").css("height","12%")
+        $("#lofont").css("font-size","20px")
+        $("#lofont").css("margin-top","30px")
+        $("#lofont").css("margin-left","3%")
+    }
+
+
+    window.onbeforeunload = onbeforeunload_handler;
+    window.onunload = onunload_handler;
+    function onbeforeunload_handler()
+    {
+        var warning="确认退出?";
+        close()
+        return warning;
+    }
+
+    function onunload_handler()
+    {
+        var warning="谢谢光临";
+        alert(warning);
+    }
+    $(function(){
+        $('#ul-menu li:first-child').addClass("li_select")
+        $(".main-right").load("info_list?"+Math.random());
+        $("#ul-menu li").each(function () {
+            $(this).click(function () {
+                $("#ul-menu li").removeClass("li_select")
+                $(this).addClass("li_select");
+                $(".main-right").load($(this).data("url")+"?"+Math.random());
+{#                connectWebScoket()#}
+            });
+        });
+
+
+
+
+
+
+    });
+    //关闭socket连接
+    function close(){
+        if(window.websocket){
+            window.websocket.close();
+        }
+    }
+
+{#    //创建websocket连接#}
+{#    function connectWebScoket(){#}
+{#        if(window.websocket){#}
+{#                window.websocket.close()#}
+{#        }#}
+{#        var websocket = new WebSocket("ws://" + window.location.host + "/echo");#}
+{#        websocket.onopen = function () {#}
+{#                console.log('WebSocket open');#}
+{#                sendMsg()//发送消息#}
+{#        };#}
+{#        websocket.onmessage = function (responseData) {#}
+{#            console.log('message: ' + responseData.data);//浏览器控制台打印返回的数据#}
+{#            var jsondata = eval('(' + responseData.data + ')'); //将返回的数据转换为json对象#}
+{#            $('#task_num').text(jsondata.task_num); //展示数据#}
+{#            console.info(jsondata)#}
+{#        };#}
+{#        window.websocket = websocket;#}
+{#    }#}
+{#    //发送消息#}
+{#    function sendMsg(){#}
+{#        if(!window.websocket){#}
+{#            alert("请连接服务器");#}
+{#        }else{#}
+{#            window.websocket.send(JSON.stringify({"msg":"hello word"}));//发送json数据类型#}
+{#        }#}
+{#    }#}
+
+{#    $("#btn_huoqu").click(function(){#}
+{#        alert($(window).height());#}
+{#        alert($(window).width());#}
+{#    });#}
+
+
+
+
+</script>
+</body>
+</html>

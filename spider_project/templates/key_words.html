@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>关键词库</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/jqcloud.css" />
+    <script src="/static/js/jqcloud-1.0.4.js"></script>
+    <script src="/static/js/jquery-2.2.2.min.js"></script>
+    <style>
+        #key_main{
+            width: 100%;
+            background-color:#E5E5E5 ;
+        }
+        #key_main_top{
+            width: 100%;
+            height: 40px;
+        }
+        
+        
+    </style>
+</head>
+<body>
+    <div id="key_main">
+        <div id="key_main_top">
+            <div style="height: 15%;width: 95%;margin: auto;"></div>
+            <div style="width: 95%;height: 80%;margin: auto;">
+                <button style="height: 29px;margin-left: 10px;" type="button" class="btn  btn-sm btn-info" id="btn_search">
+                        <i class="glyphicon glyphicon-search"></i>添加关键词
+                </button>
+            </div>
+        </div>
+
+        <div class="key_words_div" id="key_words_div"  style="width: 95%;margin: auto;background-color: white;height: 500px;">
+
+
+        </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    </div>
+<script>
+    var height=parseInt($(window).height())-(parseInt($(window).height())*0.12)
+    $("#key_main").css("height",height+"px")
+
+    var word_array = [
+          {text: "Lorem", weight: 15},
+          {text: "Ipsum", weight: 9, link: "http://jquery.com/"},
+          {text: "Dolor", weight: 6, html: {title: "I can haz any html attribute"}},
+          {text: "Sit", weight: 7},
+          {text: "Amet", weight: 5}
+    ];
+    $(function(){
+        $("#key_words_div").jQCloud(word_array);
+    });
+
+
+
+
+
+</script>
+</body>
+</html>

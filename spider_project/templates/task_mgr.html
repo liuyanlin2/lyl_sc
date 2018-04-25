@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>爬虫管理</title>
+    <style>
+        #task_main{
+            width: 100%;
+            background-color:#E5E5E5 ;
+        }
+        #task_main_top{
+            width: 100%;
+            height: 40px;
+        }
+        #task_table{
+            text-align: center;
+        }
+        #task_table th{
+            text-align: center;
+        }
+        .oper_btn{
+            border: none;
+        }
+        .info_num{
+            color: #EDA236;
+        }
+        .state_color1{
+            color: #4cae4c;
+        }
+        .state_color2{
+            color: red;
+        }
+        .state_color3{
+            color:brown;
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <div id="task_main">
+        <div id="task_main_top">
+            <div style="height: 15%;width: 95%;margin: auto;"></div>
+            <div style="width: 95%;height: 80%;margin: auto;">
+                <select id="ip_select" style="height: 30px;">
+                        <option value="">---全部---</option>
+                        <option value="192.168.0.6">192.168.0.6</option>
+                        <option value="192.168.0.1602">192.168.0.6</option>
+                </select>
+            </div>
+        </div>
+        <table id="task_table" class="table" style="width: 95%;margin: auto;background-color: white;">
+            <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>任务名称</th>
+                    <th>服务器IP</th>
+                    <th>时间间隔</th>
+                    <th>派发状态</th>
+                    <th>任务数量</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="task_list">
+                <tr>
+                    <td>1001</td>
+                    <td>麻辣社区</td>
+                    <td>192.168.1.102</td>
+                    <td>5分钟</td>
+                    <td class="state_color">已停止</td>
+                    <td class="info_num" id="task_num">0</td>
+                    <td>
+                        <button title="启动" class="oper_btn btn btn-success btn-xs"><i class="glyphicon glyphicon-play"></i></button>
+                        <button title="设置" class="oper_btn btn btn-warning btn-xs"><i class="glyphicon glyphicon-wrench"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="7" align="right" style="padding-top: 10px;">
+                        <div style="width: 40%;float: right">
+                            <ul class="pagination" id="pagination2" style="float: right;"></ul>
+                             <label style="width: 50%;" id="task_list_total" >总共0页0条</label>
+                        </div>
+
+                    </td>
+                </tr>
+
+            </tfoot>
+
+        </table>
+
+    </div>
+
+  <!--模态框-->
+<div class="modal fade" id="myModal_start_task" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 300px;">
+        <div class="modal-content" style="width: 300px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">提示！</h4>
+            </div>
+            <div class="modal-body">
+                <span>确认启动吗？</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">否</button>
+                <button id="btn_start_task" onclick="okStartTask()" type="button" class="btn btn-primary">是</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+  <!--模态框-->
+<div class="modal fade" id="myModal_end_task" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 300px;">
+        <div class="modal-content" style="width: 300px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">提示！</h4>
+            </div>
+            <div class="modal-body">
+                <span>确认停止吗？停止后相关爬虫也会随之停止，请谨慎操作！</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">否</button>
+                <button id="btn_end_task" onclick="okendTask()" type="button" class="btn btn-primary">是</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+  <!--模态框-->
+<div class="modal fade" id="myModal_speed" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 300px;">
+        <div class="modal-content" style="width: 300px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">进度！</h4>
+            </div>
+            <div class="modal-body">
+                <div class="progress progress-striped active" style="">
+                    <div id="jindu_kuan_div" class="progress-bar progress-bar-success" role="progressbar"
+                         aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                         style="width: 10%;">
+                        <span class="sr-only">40% 完成</span>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<!-- 设置模态框（Modal） -->
+<div class="modal fade" id="my_setUpModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 700px;">
+        <div class="modal-content" style="width: 700px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">设置</h4>
+            </div>
+            <div class="modal-body">
+                <form id="setup_form">
+                    <div style="width: 100%;height: 280px;">
+                        <input type="hidden" id="id" name="Fid"/>
+                        <div class="form-group" style="width: 310px;float: left;">
+                            <label for="FtaskName">任务名称</label>
+                            <input id="FtaskName" name="FtaskName" type="text" style="width: 300px;" class="form-control" placeholder="请输入任务名称">
+                        </div>
+                        <div class="form-group" style="width: 300px;float: left;margin-left: 53px;">
+                            <label for="FserverIp">服务器IP</label>
+                            <input id="FserverIp" name="FserverIp" type="text" style="width: 300px;" class="form-control" placeholder="请输入服务器IP">
+                        </div>
+                        <div class="form-group" style="width: 310px;float: left;">
+                            <label for="FtimeInterval">时间间隔</label>
+                            <input id="FtimeInterval" name="FtimeInterval" type="text" style="width: 300px;" class="form-control" placeholder="请输入时间间隔/分钟">
+                        </div>
+                        <div class="form-group" style="width: 300px;float: left;margin-left: 53px;">
+                            <label for="FscriptAddress">脚本运行地址</label>
+                            <input id="FscriptAddress" name="FscriptAddress" type="text" style="width: 300px;" class="form-control" placeholder="请输入脚本运行地址">
+                        </div>
+                        <div class="form-group" style="width: 310px;float: left;">
+                            <label for="FuserName">主机登录用户名</label>
+                            <input id="FuserName" name="FuserName" type="text" style="width: 300px;" class="form-control" placeholder="请输入主机用户名">
+                        </div>
+                        <div class="form-group" style="width: 300px;float: left;margin-left: 53px;">
+                            <label for="FpassWord">主机登录密码</label>
+                            <input id="FpassWord" name="FpassWord" type="text" style="width: 300px;" class="form-control" placeholder="请输入登录密码">
+                        </div>
+                        <div class="form-group" style="width: 310px;float: left;">
+                            <label for="Fport">端口号</label>
+                            <input id="Fport" name="Fport" type="text" style="width: 300px;" class="form-control" placeholder="请输入任务派发端口号">
+                        </div>
+                        <div class="form-group" style="width: 300px;float: left;margin-left: 53px;">
+                            <label for="Fauthkey">验证码</label>
+                            <input id="Fauthkey" name="Fauthkey" type="text" style="width: 300px;" class="form-control" placeholder="请输入验证码">
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button id="btn_save_setup" type="button" class="btn btn-primary">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<!-- 操作提示模态框/.modal -->
+ <div class="modal fade" id="myModal_tishi" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 300px;">
+        <div class="modal-content" style="width: 300px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">提示！</h4>
+            </div>
+            <div class="modal-body">
+                <span style="font-size: 18px;" id="t_msg"></span>
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+
+
+<script type="text/javascript">//<![CDATA[
+    var reqdata={}
+    //计算页面高度
+    var height=parseInt($(window).height())-(parseInt($(window).height())*0.12)
+    $("#task_main").css("height",height+"px")
+    $("#pagination2").jqPaginator({
+            totalPages: 1,
+            visiblePages: 3,
+            currentPage: 1,
+            onPageChange: function (pageIndex) {
+                connectWebScoket(pageIndex);
+            }
+     });
+    //获取任务列表
+    function getTaskList(pageIndex){
+        var mydata={}
+        mydata.pageIndex=pageIndex
+        mydata.pageSize=8
+        mydata.type=1
+        mydata.ipSelect=$("#ip_select").val()
+        sendMsg(mydata)
+    }
+    //创建websocket连接
+    function connectWebScoket(pageIndex){
+        if(window.websocket){
+                window.websocket.close()
+        }
+        var websocket = new WebSocket("ws://" + window.location.host + "/echo");
+        websocket.onopen = function () {
+                console.log('WebSocket open');
+                getTaskList(pageIndex)//发送消息
+        };
+        websocket.onmessage = function (responseData) {
+{#            console.log('message: ' + responseData.data);//浏览器控制台打印返回的数据#}
+            var jsondata = eval('(' + responseData.data + ')'); //将返回的数据转换为json对象
+            var htmlBuf = new StringBuffer();
+            $.each(jsondata.dataList, function (index, item) {
+                htmlBuf.append('<tr>')
+                htmlBuf.append('<td>'+item.Fid+'</td>')
+                htmlBuf.append('<td>'+item.FtaskName+'</td>')
+                htmlBuf.append('<td>'+item.FserverIp+'</td>')
+                htmlBuf.append('<td>'+item.FtimeInterval+'分钟</td>')
+
+                if(item.Fstate==1){
+                    htmlBuf.append('<td class="state_color1">运行中</td>')
+                }else if(item.Fstate==0){
+                    htmlBuf.append('<td class="state_color2">已停止</td>')
+                }else if(item.Fstate==2){
+                    htmlBuf.append('<td class="state_color3">暂停中</td>')
+                }
+                htmlBuf.append('<td class="info_num" id="task_num">'+item.Fnum+'</td>')
+                htmlBuf.append('<td data-id='+item.Fid+'>')
+                if(item.Fstate==1 || item.Fstate==2){
+                    htmlBuf.append('<button data-state="0" onclick="endTask(this)" title="停止" class="oper_btn btn btn-danger btn-xs"><i class="glyphicon glyphicon-stop"></i></button>')
+                    htmlBuf.append('&nbsp;<button title="设置" onclick="setUp(this)" class="oper_btn btn btn-warning btn-xs"><i class="glyphicon glyphicon-wrench"></i></button>')
+                }else {
+                    htmlBuf.append('<button data-state="1" title="启动" onclick="startTask(this)" class="oper_btn btn btn-success btn-xs"><i class="glyphicon glyphicon-play"></i></button>')
+                    htmlBuf.append('&nbsp;<button title="设置" onclick="setUp(this)" class="oper_btn btn btn-warning btn-xs"><i class="glyphicon glyphicon-wrench"></i></button>')
+                }
+                htmlBuf.append('</td>')
+                htmlBuf.append('</tr>')
+            })
+            $("#task_list").html(htmlBuf.arrayToString().toString());
+            $("#task_list_total").text("总共"+jsondata.totalPages+"页"+jsondata.totalCounts+"条")
+            $('#pagination2').jqPaginator('option', {
+                    totalPages: jsondata.totalPages,
+                    currentPage: pageIndex
+            });
+        };
+        window.websocket = websocket;
+    }
+    //发送消息
+    function sendMsg(data){
+        if(!window.websocket){
+            alert("请连接服务器");
+        }else{
+            window.websocket.send(JSON.stringify(data));//发送json数据类型
+        }
+    }
+
+    //开始任务确认模态框
+    function startTask(obj){
+        $("#myModal_start_task").modal("show")
+        reqdata.Fstate=$(obj).data("state")
+        reqdata.Fid=$(obj).parent().data("id")
+    }
+    //结束任务提示
+    function endTask(obj){
+        $("#myModal_end_task").modal("show")
+        reqdata.Fstate=$(obj).data("state")
+        reqdata.Fid=$(obj).parent().data("id")
+    }
+
+    //进度条模态框
+    function myModalSpeed(){
+        $("#myModal_speed").modal("show")
+        $("#jindu_kuan_div").css("width","0%")
+        upTask()
+    }
+    //确认开启任务派发
+    function okStartTask(){
+        $("#myModal_start_task").modal("hide")
+        myModalSpeed()
+    }
+    //确认停止派发
+    function okendTask(){
+        $("#myModal_end_task").modal("hide")
+        myModalSpeed()
+    }
+    //修改
+    function upTask(){
+        $.ajaxSettings.async = true;
+        var num=0
+        for(var i=0;i<5;i++){
+            num+=10
+            setTimeout(function () {
+                $("#jindu_kuan_div").css("width",num+"%")
+            },1000)
+        }
+        $.getJSON("/spider_app/task_mgr/upTask/",reqdata,function(responseData){
+            console.info(responseData)
+            if(responseData.istrue=="success"){
+                for(var i=0;i<5;i++){
+                    num+=10
+                    setTimeout(function () {
+                        $("#jindu_kuan_div").css("width",num+"%")
+                    },1000)
+                }
+                $("#myModal_speed").modal("hide")
+                tishi(responseData.msg)
+            }else if(responseData.istrue=="false"){
+                for(var i=0;i<5;i++){
+                    num+=10
+                    setTimeout(function () {
+                        $("#jindu_kuan_div").css("width",num+"%")
+                    },1000)
+                }
+                $("#myModal_speed").modal("hide")
+                tishi(responseData.msg)
+            }
+
+
+
+
+
+{#            if(responseData.istrue=="false"){#}
+{#                for(var i=0;i<5;i++){#}
+{#                    num+=10;#}
+{#                    setTimeout(function () {#}
+{#                          $("#jindu_kuan_div").css("width",num+"%");#}
+{#                          if(num==50){#}
+{#                              setTimeout(function () {#}
+{#                                  if(num==50){#}
+{#                                      $("#myModal_speed").modal("hide")#}
+{#                                  }#}
+{#                              },200)#}
+{#                          }#}
+{#                    },800)#}
+{#                }#}
+{#                setTimeout(function () {#}
+{#                    alert(responseData.msg)#}
+{#                },1200)#}
+{#            }else if(responseData.istrue=="success"){#}
+{#                for(var i=0;i<10;i++){#}
+{#                    num+=10#}
+{#                    setTimeout(function () {#}
+{#                       $("#jindu_kuan_div").css("width",num+"%")#}
+{#                          if(num==100){#}
+{#                              setTimeout(function () {#}
+{#                                  if(num==100){#}
+{#                                      $("#myModal_speed").modal("hide")#}
+{#                                  }#}
+{#                                },800)#}
+{#                          }#}
+{#                    },800)#}
+{#                }#}
+{#                setTimeout(function () {#}
+{#                    tishi(responseData.msg)#}
+{#                },1200)#}
+{#            }#}
+        })
+
+    }
+
+    //设置
+    function setUp(obj){
+        $("#id").val($(obj).parent().data("id"));
+        $("#my_setUpModal").modal("show")
+        getInfoById()
+    }
+    //设置保存提交方法
+    $("#btn_save_setup").click(function(){
+        $("#setup_form").ajaxSubmit({
+            url: '/spider_app/task_mgr/setUp/?random=' + Math.random(), //提交给哪个执行
+            type: 'POST',
+            success: function (responseData) {
+                console.info(responseData)
+                //影藏弹出框
+                $("#setup_form").resetForm();
+                $("#my_setUpModal").modal("hide")
+                tishi(responseData.msg)
+
+            },//显示操作提示
+            error: function (XmlHttpRequest, textStatus, errorThrown) {
+                tishi("提交异常" + errorThrown.toString() + textStatus);
+            }
+        });
+    });
+
+    //提示框
+    function tishi(msg){
+        $("#t_msg").text(msg)
+        $("#myModal_tishi").modal("show")
+        setTimeout(function () {
+           $("#myModal_tishi").modal("hide")
+        },1000)
+
+    }
+    //根据id获取单条信息
+    function getInfoById(){
+        var Fid=$("#id").val();
+        $.getJSON("/spider_app/task_mgr/getInfoById/",{"Fid":Fid},function(responseData){
+            console.info(responseData)
+            $.each(responseData.result, function (key, item) {
+                $("#"+key).val(item)
+            });
+        });
+    }
+
+    $("#ip_select").change(function(){
+        connectWebScoket(1)
+
+    });
+
+
+
+
+
+ //]]>
+</script>
+</body>
+</html>
