@@ -11,6 +11,6 @@
 - apt-get install lxml
 - pip install dwebsocket
 - pip install selenium selenium
---------------------------5.x版本的elsearch------------------------------------  1
+- --------------------------5.x版本的elsearch------------------------------------  1
 因为es官方文档说es不能在roo账户下启动，所以须建个新账户用于启动es
 
