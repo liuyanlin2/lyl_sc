@@ -66,9 +66,7 @@ WSGI_APPLICATION = 'spider_project.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 #mysql连接地址
 MYSQL_HOST="127.0.0.1"
-# MYSQL_HOST="139.159.218.222"
 MYSQL_USERNAME="root"
-# MYSQL_PASSWD="3.1415926"
 MYSQL_PASSWD="123456"
 MYSQL_DB="spider_db"
 # Database
@@ -138,8 +136,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
-
-#scdel3.1415926
 
 
 #ES连接地址
